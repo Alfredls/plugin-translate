@@ -4,7 +4,10 @@
   "description": "Extensión para Chrome y Firefox para aprender inglés leyendo textos en la web",
   "scripts": {
     "chrome": "node switch-browser.js chrome",
-    "firefox": "node switch-browser.js firefox"
+    "firefox": "node switch-browser.js firefox",
+    "build": "node build-dist.js all",
+    "build:chrome": "node build-dist.js chrome",
+    "build:firefox": "node build-dist.js firefox"
   },
   "keywords": [
     "chrome-extension",
