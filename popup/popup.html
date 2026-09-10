@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lector Inglés - Vocabulario y Quiz</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header with SVG Logo and Word Count -->
+    <header class="header">
+      <div class="logo-area">
+        <div class="logo-icon-svg">
+          <svg viewBox="0 0 24 24" width="22" height="22">
+            <path fill="#10b981" d="M19 2H6c-1.2 0-2 .8-2 2v16c0 1.2.8 2 2 2h13c.6 0 1-.4 1-1s-.4-1-1-1H6c-.6 0-1-.4-1-1V4c0-.6.4-1 1-1h13V2z"/>
+            <path fill="#059669" d="M19 2H8c-.6 0-1 .4-1 1v15c0 .6.4 1 1 1h11c.6 0 1-.4 1-1V3c0-.6-.4-1-1-1z"/>
+            <path fill="#ffffff" d="M11 6h6v2h-6zm0 4h6v2h-6zm0 4h4v2h-4z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="title">Lector Inglés</h1>
+          <p class="subtitle">Vocabulario y Quiz</p>
+        </div>
+      </div>
+      <div class="stats-area">
+        <span class="pill pill-saved" id="count-saved">0 palabras</span>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs with SVG Icons -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="vocabulary">
+        <svg viewBox="0 0 24 24" class="tab-icon">
+          <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+        </svg>
+        <span>Vocabulario</span>
+      </button>
+
+      <button class="tab-btn" data-tab="quiz">
+        <svg viewBox="0 0 24 24" class="tab-icon">
+          <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H7v2h10v-2h-4v-3.1c1.78-.34 3.2-1.68 3.61-3.4A5.006 5.006 0 0021 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
+        </svg>
+        <span>Quiz</span>
+      </button>
+
+      <button class="tab-btn" data-tab="settings">
+        <svg viewBox="0 0 24 24" class="tab-icon">
+          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+        </svg>
+        <span>Configuración</span>
+      </button>
+    </nav>
+
+    <!-- Content Sections -->
+    <main class="content-area">
+      <!-- Tab 1: Vocabulario -->
+      <section id="tab-vocabulary" class="tab-pane active">
+        <!-- Search bar -->
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="Buscar palabra o significado..." autocomplete="off">
+        </div>
+
+        <!-- Filter Sub-bar (All vs Current Page) -->
+        <div class="filter-bar">
+          <div class="filter-pills">
+            <button class="f-pill active" id="filter-all" data-filter="all">Todas (<span id="count-filter-all">0</span>)</button>
+            <button class="f-pill" id="filter-page" data-filter="page">Esta página (<span id="count-filter-page">0</span>)</button>
+          </div>
+          <button class="btn-clear-page hidden" id="btn-clear-page" title="Borrar palabras guardadas en esta página">
+            <svg viewBox="0 0 24 24" width="13" height="13"><path fill="currentColor" d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            <span>Limpiar página</span>
+          </button>
+        </div>
+
+        <div id="word-list" class="word-list"></div>
+
+        <div id="empty-vocabulary" class="empty-state hidden">
+          <div class="empty-icon">📖</div>
+          <p id="empty-vocab-msg">Tu lista de vocabulario está vacía.</p>
+          <small>Selecciona cualquier palabra en inglés en una página web y pulsa <b>"+ Agregar a vocabulario"</b>.</small>
+        </div>
+      </section>
+
+      <!-- Tab 2: Quiz Mode -->
+      <section id="tab-quiz" class="tab-pane">
+        <!-- Active Quiz View -->
+        <div id="quiz-active" class="quiz-container">
+          <!-- Quiz Top Info -->
+          <div class="quiz-top">
+            <div class="quiz-meta">
+              <span id="quiz-question-number">Pregunta 1 de 5</span>
+              <span class="quiz-score-badge" id="quiz-score-badge">0 aciertos</span>
+            </div>
+            <div class="quiz-progress-track">
+              <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+            </div>
+          </div>
+
+          <!-- Question Card -->
+          <div class="quiz-card">
+            <div class="quiz-word-row">
+              <button class="quiz-audio-btn" id="quiz-audio-btn" title="Escuchar pronunciación">
+                <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zm-2.5-1.73L6.5 6H2v12h4.5l5 4.5v-21zm-1.5 4.27v12.46L6.85 15H4V9h2.85l3.65-3.23zM14 8.5v7c1.48-.73 2.5-2.25 2.5-3.5S15.48 9.23 14 8.5z"/></svg>
+              </button>
+              <h2 class="quiz-word" id="quiz-word">Word</h2>
+            </div>
+            <p class="quiz-phonetic" id="quiz-phonetic">[phonetic]</p>
+            <p class="quiz-hint hidden" id="quiz-hint"></p>
+          </div>
+
+          <!-- Multiple Choice Options -->
+          <div class="quiz-options" id="quiz-options">
+            <!-- Dynamically generated buttons A, B, C, D -->
+          </div>
+
+          <!-- Action Button: Select -> Confirm -> Next -->
+          <div class="quiz-footer">
+            <button class="quiz-action-btn disabled" id="quiz-action-btn" disabled>Selecciona una respuesta</button>
+          </div>
+        </div>
+
+        <!-- Quiz Results Screen -->
+        <div id="quiz-finished" class="quiz-finished-card hidden">
+          <div class="quiz-trophy" id="quiz-finish-icon">🏆</div>
+          <h2 class="quiz-finish-title">¡Quiz Completado!</h2>
+          
+          <div class="quiz-score-badge-circle">
+            <span class="quiz-score-percent" id="quiz-finish-percent">80%</span>
+            <span class="quiz-score-label">PUNTUACIÓN</span>
+          </div>
+
+          <p class="quiz-finish-subtitle" id="quiz-finish-score">Acertaste 4 de 5 preguntas</p>
+
+          <div class="quiz-score-breakdown">
+            <div class="quiz-stat-card stat-correct">
+              <span class="stat-num" id="stat-correct-count">4</span>
+              <span class="stat-name">Correctas</span>
+            </div>
+            <div class="quiz-stat-card stat-wrong">
+              <span class="stat-num" id="stat-wrong-count">1</span>
+              <span class="stat-name">Por mejorar</span>
+            </div>
+          </div>
+          
+          <div class="quiz-finish-actions">
+            <button class="btn btn-primary" id="btn-quiz-to-vocab">
+              <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>
+              <span>Ver mi Vocabulario</span>
+            </button>
+            <button class="btn btn-secondary" id="btn-restart-quiz">
+              <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+              <span>Reiniciar Quiz</span>
+            </button>
+            <button class="btn btn-link" id="btn-export-quiz-html">🎮 Exportar Quiz en HTML</button>
+          </div>
+        </div>
+
+        <!-- Quiz Empty State (< 2 words) -->
+        <div id="quiz-empty" class="empty-state hidden">
+          <div class="empty-icon">🎯</div>
+          <p>Se necesitan al menos 2 palabras</p>
+          <small>Guarda algunas palabras mientras lees en la web para activar el Quiz interactivo.</small>
+        </div>
+      </section>
+
+      <!-- Tab 3: Configuración -->
+      <section id="tab-settings" class="tab-pane">
+        <!-- Page Cleanup Section -->
+        <div class="settings-group">
+          <div class="settings-group-title">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="#10b981" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+            <span>Gestión por página web</span>
+          </div>
+          <p class="settings-desc">Página actual: <b id="settings-current-domain">Detectando...</b> (<span id="settings-current-page-count">0 palabras</span>)</p>
+          <button class="btn btn-secondary" id="btn-clean-current-domain">
+            🗑️ Borrar palabras de esta página
+          </button>
+        </div>
+
+        <!-- Auto Cleanup Retention Section -->
+        <div class="settings-group">
+          <div class="settings-group-title">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="#3b82f6" d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            <span>Borrado automático programado</span>
+          </div>
+          <p class="settings-desc">Limpia palabras antiguas automáticamente para mantener tu vocabulario relevante y optimizado:</p>
+          <div class="select-row">
+            <select id="select-auto-cleanup" class="custom-select">
+              <option value="0">Nunca (conservar siempre)</option>
+              <option value="7">Borrar palabras de más de 7 días</option>
+              <option value="30">Borrar palabras de más de 30 días</option>
+              <option value="90">Borrar palabras de más de 90 días</option>
+            </select>
+          </div>
+          <div style="margin-top: 8px;">
+            <button class="btn btn-secondary" id="btn-run-cleanup-now">🧹 Ejecutar limpieza ahora</button>
+          </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="settings-group">
+          <div class="settings-group-title">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="#6366f1" d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+            <span>Exportar vocabulario y Quiz</span>
+          </div>
+          <p class="settings-desc">Guarda tu lista para Anki, Excel o descarga el Quiz para practicar sin conexión en cualquier dispositivo:</p>
+          <div class="btn-row">
+            <button class="btn btn-secondary" id="btn-export-csv">📥 Exportar a CSV (Anki / Excel)</button>
+            <button class="btn btn-secondary" id="btn-export-json">💾 Exportar a JSON</button>
+            <button class="btn btn-primary" id="btn-export-quiz-standalone">🎮 Exportar Quiz Interactivo en HTML</button>
+          </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="settings-group danger-zone">
+          <div class="settings-group-title" style="color: #b91c1c;">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="#b91c1c" d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+            <span>Zona de peligro</span>
+          </div>
+          <button class="btn btn-danger" id="btn-clear-all">Borrar todo el vocabulario</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Lector Inglés • Chrome & Firefox</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

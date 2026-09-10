@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Lector Inglés - Traducción y Aprendizaje de Vocabulario",
+  "version": "1.2.0",
+  "description": "Selecciona cualquier palabra o párrafo en inglés al navegar para traducirlo al instante, escuchar su pronunciación nativa, guardarlo en tu vocabulario y practicar con Quiz.",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "Lector Inglés - Vocabulario",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["offline_dict.js", "content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://clients5.google.com/*",
+    "https://translate.googleapis.com/*",
+    "https://*.google.com/*",
+    "https://api.mymemory.translated.net/*",
+    "https://api.dictionaryapi.dev/*"
+  ]
+}
