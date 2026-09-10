@@ -424,10 +424,34 @@
     window.speechSynthesis.speak(utterance);
   }
 
+  // Safe DOM renderer (avoids innerHTML assignment warnings)
+  function renderShadowTree(htmlWithStyle) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlWithStyle, 'text/html');
+    const nodes = [...doc.head.childNodes, ...doc.body.childNodes];
+    shadowRoot.replaceChildren(...nodes);
+  }
+
+  function showSavedBadgeInCard() {
+    const actionsRow = shadowRoot?.querySelector('.rl-actions-row');
+    if (actionsRow) {
+      const badge = document.createElement('div');
+      badge.className = 'rl-saved-badge';
+      const doc = new DOMParser().parseFromString(`
+        <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; flex-shrink: 0;">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+        <span>En tu vocabulario</span>
+      `, 'text/html');
+      badge.replaceChildren(...doc.body.childNodes);
+      actionsRow.replaceChildren(badge);
+    }
+  }
+
   // Remove popup from DOM
   function removePopup() {
     if (shadowRoot) {
-      shadowRoot.innerHTML = '';
+      shadowRoot.replaceChildren();
     }
     activeWordData = null;
   }
@@ -445,7 +469,7 @@
     const hasValidPhonetic = cleanPhonetic && cleanPhonetic.toLowerCase() !== `[${original.toLowerCase().trim()}]`;
     const phoneticHtml = hasValidPhonetic ? `<div class="rl-phonetic">${escapeHtml(cleanPhonetic)}</div>` : '';
 
-    shadowRoot.innerHTML = `
+    renderShadowTree(`
       <style>${styles}</style>
       <div class="rl-popup-card" id="rl-card" style="top: ${coords.top}px; left: ${coords.left}px;">
         <div class="rl-content">
@@ -477,24 +501,9 @@
           `}
         </div>
       </div>
-    `;
+    `);
 
     adjustCardPosition(coords);
-
-    // Helper to display non-clickable saved text
-    function showSavedBadge() {
-      const actionsRow = shadowRoot?.querySelector('.rl-actions-row');
-      if (actionsRow) {
-        actionsRow.innerHTML = `
-          <div class="rl-saved-badge">
-            <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; flex-shrink: 0;">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-            </svg>
-            <span>En tu vocabulario</span>
-          </div>
-        `;
-      }
-    }
 
     // Event listeners
     const speakerBtn = shadowRoot.getElementById('rl-speaker');
@@ -526,7 +535,7 @@
         });
 
         if (res && res.success && res.isSaved) {
-          showSavedBadge();
+          showSavedBadgeInCard();
         }
       } catch (err) {
         console.warn('Error al guardar vocabulario:', err);
@@ -541,7 +550,7 @@
 
     const { original, translation, googleTtsUrl } = data;
 
-    shadowRoot.innerHTML = `
+    renderShadowTree(`
       <style>${styles}</style>
       <div class="rl-paragraph-card" id="rl-card" style="top: ${coords.top}px; left: ${coords.left}px;">
         <div class="rl-para-header">
@@ -560,7 +569,7 @@
           ${escapeHtml(translation)}
         </div>
       </div>
-    `;
+    `);
 
     adjustCardPosition(coords);
 
@@ -611,7 +620,7 @@
   function renderLoading(coords, isParagraph = false) {
     initHost();
     const cardWidth = isParagraph ? 260 : 180;
-    shadowRoot.innerHTML = `
+    renderShadowTree(`
       <style>${styles}</style>
       <div class="rl-popup-card" id="rl-card" style="top: ${coords.top}px; left: ${coords.left}px; width: ${cardWidth}px;">
         <div class="rl-content">
@@ -621,7 +630,7 @@
           </div>
         </div>
       </div>
-    `;
+    `);
   }
 
   // Calculate coords for popup relative to document
@@ -721,17 +730,7 @@
 
         chrome.runtime.sendMessage({ action: 'getWordStatus', word: text }).then(res => {
           if (res && res.isSaved) {
-            const actionsRow = shadowRoot?.querySelector('.rl-actions-row');
-            if (actionsRow) {
-              actionsRow.innerHTML = `
-                <div class="rl-saved-badge">
-                  <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; flex-shrink: 0;">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                  </svg>
-                  <span>En tu vocabulario</span>
-                </div>
-              `;
-            }
+            showSavedBadgeInCard();
           }
         }).catch(() => {});
         return;
@@ -752,17 +751,7 @@
 
         chrome.runtime.sendMessage({ action: 'getWordStatus', word: text }).then(res => {
           if (res && res.isSaved) {
-            const actionsRow = shadowRoot?.querySelector('.rl-actions-row');
-            if (actionsRow) {
-              actionsRow.innerHTML = `
-                <div class="rl-saved-badge">
-                  <svg viewBox="0 0 24 24" width="16" height="16" style="fill: currentColor; flex-shrink: 0;">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                  </svg>
-                  <span>En tu vocabulario</span>
-                </div>
-              `;
-            }
+            showSavedBadgeInCard();
           }
         }).catch(() => {});
         return;

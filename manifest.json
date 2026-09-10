@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Lector Inglés - Traducción y Aprendizaje de Vocabulario",
+  "name": "Lector Inglés - Vocabulario y Quiz",
   "version": "1.2.0",
-  "description": "Selecciona cualquier palabra o párrafo en inglés al navegar para traducirlo al instante, escuchar su pronunciación nativa, guardarlo en tu vocabulario y practicar con Quiz.",
+  "description": "Traduce palabras y párrafos en inglés al navegar, escucha su pronunciación nativa y practica tu vocabulario con Quiz interactivos.",
   "icons": {
     "16": "icons/icon-16.png",
     "48": "icons/icon-48.png",
@@ -40,8 +40,17 @@
   ],
   "browser_specific_settings": {
     "gecko": {
-      "id": "lector-ingles@alfredo.local",
-      "strict_min_version": "109.0"
+      "id": "lector-ingles@alfredo.dev",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    },
+    "gecko_android": {
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   }
 }

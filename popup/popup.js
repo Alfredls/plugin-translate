@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Render Vocabulary List
   function renderWordList() {
-    wordListEl.innerHTML = '';
+    wordListEl.replaceChildren();
 
     // Filter by tab
     let words = currentFilter === 'page' ? allWords.filter(wordMatchesCurrentPage) : allWords;
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (e) {}
       }
 
-      card.innerHTML = `
+      const cardNodes = new DOMParser().parseFromString(`
         <div class="wc-top-row">
           <div class="wc-word-info">
             <span class="wc-word">${escapeHtml(w.word)}</span>
@@ -221,7 +221,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           <span class="wc-date">${dateStr}</span>
           ${domainStr ? `<span class="wc-source-badge" title="${escapeHtml(w.sourceUrl)}">🌐 ${escapeHtml(domainStr)}</span>` : ''}
         </div>
-      `;
+      `, 'text/html').body.childNodes;
+
+      card.replaceChildren(...cardNodes);
 
       // Audio button
       const audioBtn = card.querySelector('.btn-icon-audio');
@@ -372,16 +374,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Generate option buttons (A, B, C, D)
-    quizOptionsEl.innerHTML = '';
+    quizOptionsEl.replaceChildren();
     const letters = ['A', 'B', 'C', 'D'];
 
     q.options.forEach((opt, idx) => {
       const btn = document.createElement('button');
       btn.className = 'quiz-opt-btn';
-      btn.innerHTML = `
-        <span class="quiz-opt-letter">${letters[idx] || ''}</span>
-        <span class="quiz-opt-text">${escapeHtml(opt)}</span>
-      `;
+
+      const letterSpan = document.createElement('span');
+      letterSpan.className = 'quiz-opt-letter';
+      letterSpan.textContent = letters[idx] || '';
+
+      const textSpan = document.createElement('span');
+      textSpan.className = 'quiz-opt-text';
+      textSpan.textContent = opt;
+
+      btn.replaceChildren(letterSpan, textSpan);
 
       btn.addEventListener('click', () => {
         // If already evaluated, don't allow changing
