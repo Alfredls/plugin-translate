@@ -1,12 +1,19 @@
-# 📖 Lector Inglés - Extensión para Chrome y Firefox (v1.2.0)
+# 📖 Lector Inglés - Extensión para Chrome y Firefox (v1.3.0)
 
 Una extensión de navegador moderna y de alto rendimiento diseñada para aprender inglés de manera natural mientras navegas y lees artículos, noticias o documentación en cualquier sitio web.
 
-Compatible al 100% con **Manifest V3** en **Google Chrome, Mozilla Firefox, Brave, Microsoft Edge y Opera**.
+Compatible al 100% con **Manifest V3** en **Google Chrome, Mozilla Firefox (incluyendo Firefox para Android), Brave, Microsoft Edge y Opera**.
 
 ---
 
 ## ✨ Características Principales
+
+### 0. ⚡ Switch Rápido ON / OFF y Optimización Móvil
+- **Interruptor rápido en popup:** Pausa o reactiva instantáneamente la traducción en todas las pestañas con un solo clic. Muestra una etiqueta visual `"OFF"` en el icono de la barra cuando está desactivada.
+- **Soporte Táctil Completo para Móviles (Firefox Android / Chrome):**
+  - Detección de selección táctil (long-press y ajuste de pines).
+  - Tarjetas flotantes responsivas que respetan el ancho de pantalla móvil.
+  - Botones y controles con área de toque ergonómica (mínimo 44–50px).
 
 ### 1. 🔤 Lectura Inteligente en Cualquier Página Web
 - **Modo Palabra (1 a 3 palabras):**
@@ -114,8 +121,8 @@ Para generar los archivos `.zip` limpios y listos para subir a las tiendas ofici
 npm run build
 
 # O individualmente:
-npm run build:chrome    # Genera dist/lector-ingles-chrome-v1.2.0.zip
-npm run build:firefox   # Genera dist/lector-ingles-firefox-v1.2.0.zip
+npm run build:chrome    # Genera dist/lector-ingles-chrome-v1.3.0.zip
+npm run build:firefox   # Genera dist/lector-ingles-firefox-v1.3.0.zip
 ```
 
 Los archivos generados se guardan en la carpeta `/dist` e incluyen exclusivamente el código necesario para producción (sin `.git`, sin `node_modules`, sin archivos de prueba ni documentación).
@@ -130,11 +137,11 @@ Para consultar los requisitos de las tiendas, los textos listos para copiar y pe
 ### Resumen de Opciones de Distribución:
 1. **Chrome Web Store:**
    - Requiere cuenta de desarrollador en Google ($5 USD pago único de por vida).
-   - Se sube `dist/lector-ingles-chrome-v1.2.0.zip`.
+   - Se sube `dist/lector-ingles-chrome-v1.3.0.zip`.
    - Revisión en 1-3 días hábiles.
 2. **Mozilla Firefox Add-ons (AMO):**
    - Cuenta de desarrollador **100% gratuita**.
-   - Se sube `dist/lector-ingles-firefox-v1.2.0.zip`.
+   - Se sube `dist/lector-ingles-firefox-v1.3.0.zip`.
    - Permite publicación en catálogo público o distribución autogestionada (Mozilla firma tu extensión en minutos y te entrega un instalable `.xpi`).
 3. **Distribución Directa (Amigos / Alumnos / Uso Interno):**
    - Comparte la carpeta del proyecto para instalar en Modo Desarrollador con 1 clic sin coste ni esperas.
@@ -166,6 +173,6 @@ Plugin-navegador/
 │   ├── popup.css              # Estilos compactos y responsivos sin scroll
 │   └── popup.js               # Lógica del Quiz, filtros por página, exportaciones y audio
 └── dist/                      # Paquetes ZIP de producción generados con npm run build
-    ├── lector-ingles-chrome-v1.2.0.zip
-    └── lector-ingles-firefox-v1.2.0.zip
+    ├── lector-ingles-chrome-v1.3.0.zip
+    └── lector-ingles-firefox-v1.3.0.zip
 ```

@@ -8,8 +8,8 @@ Este documento contiene toda la información, textos y requisitos listos para co
 
 Ya hemos configurado un comando automatizado para generar los paquetes limpios listos para subir:
 - `npm run build` genera:
-  - **`dist/lector-ingles-chrome-v1.2.0.zip`** (Para Chrome Web Store, Brave, Edge, Opera)
-  - **`dist/lector-ingles-firefox-v1.2.0.zip`** (Para Mozilla Add-ons)
+  - **`dist/lector-ingles-chrome-v1.3.0.zip`** (Para Chrome Web Store, Brave, Edge, Opera)
+  - **`dist/lector-ingles-firefox-v1.3.0.zip`** (Para Mozilla Add-ons)
 
 ---
 
@@ -36,7 +36,7 @@ Ideal para compartir con amigos, alumnos o compañeros de equipo sin pagar ni es
    - Hace clic en **"Cargar descomprimida"** y selecciona la carpeta del proyecto.
 2. **Para Firefox (Extensión Firmada Autogestionada / "Unlisted"):**
    - En el panel de Mozilla (`addons.mozilla.org`), eliges la opción *"Distribución por mi cuenta (Unlisted)"*.
-   - Subes `dist/lector-ingles-firefox-v1.2.0.zip`.
+   - Subes `dist/lector-ingles-firefox-v1.3.0.zip`.
    - El sistema automático de Mozilla revisa y firma digitalmente tu extensión en pocos minutos y te entrega un archivo `.xpi`.
    - Cualquiera puede descargar ese archivo `.xpi` y hacer doble clic para instalarlo en Firefox normalmente.
 

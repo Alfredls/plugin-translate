@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Lector Inglés - Vocabulario y Quiz",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Traduce palabras y párrafos en inglés al navegar, escucha su pronunciación nativa y practica tu vocabulario con Quiz interactivos.",
   "icons": {
     "16": "icons/icon-16.png",

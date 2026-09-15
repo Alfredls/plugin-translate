@@ -1,6 +1,6 @@
 {
   "name": "lector-ingles-extension",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "description": "Extensión para Chrome y Firefox para aprender inglés leyendo textos en la web",
   "scripts": {
     "chrome": "node switch-browser.js chrome",
