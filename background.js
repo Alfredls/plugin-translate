@@ -151,6 +151,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           break;
         }
 
+        case 'setExtensionEnabled': {
+          await chrome.storage.local.set({ isExtensionEnabled: request.isEnabled });
+          updateExtensionBadge(request.isEnabled);
+          sendResponse({ success: true, isEnabled: request.isEnabled });
+          break;
+        }
+
         default:
           sendResponse({ success: false, error: 'Acción desconocida' });
       }
@@ -542,3 +549,39 @@ async function handleParagraphTranslation(rawText, targetLang = 'es') {
   memoryCache.set(cacheKey, result);
   return result;
 }
+
+// Update Action badge when extension is enabled/disabled
+function updateExtensionBadge(isEnabled) {
+  try {
+    const actionApi = chrome.action || chrome.browserAction;
+    if (!actionApi) return;
+    if (!isEnabled) {
+      actionApi.setBadgeText({ text: 'OFF' });
+      actionApi.setBadgeBackgroundColor({ color: '#64748b' });
+    } else {
+      actionApi.setBadgeText({ text: '' });
+    }
+  } catch (e) {
+    console.warn('Error al actualizar badge:', e);
+  }
+}
+
+// Sync badge on startup/installation
+async function initBadge() {
+  try {
+    const { isExtensionEnabled = true } = await chrome.storage.local.get('isExtensionEnabled');
+    updateExtensionBadge(isExtensionEnabled);
+  } catch (e) {}
+}
+
+chrome.runtime.onInstalled.addListener(() => {
+  initBadge();
+});
+
+if (chrome.runtime.onStartup) {
+  chrome.runtime.onStartup.addListener(() => {
+    initBadge();
+  });
+}
+
+initBadge();

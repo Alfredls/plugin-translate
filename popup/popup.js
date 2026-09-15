@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const countSavedEl = document.getElementById('count-saved');
   const tabBtns = document.querySelectorAll('.tab-btn');
   const tabPanes = document.querySelectorAll('.tab-pane');
+  const extensionToggle = document.getElementById('extension-toggle');
+  const toggleStatusLabel = document.getElementById('toggle-status-label');
 
   // DOM Elements - Vocab Tab
   const searchInput = document.getElementById('search-input');
@@ -116,10 +118,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         selectAutoCleanup.value = String(cleanupRes.days || 0);
       }
 
+      // Extension enabled toggle state
+      const { isExtensionEnabled = true } = await chrome.storage.local.get('isExtensionEnabled');
+      if (extensionToggle) {
+        extensionToggle.checked = isExtensionEnabled;
+      }
+      updateToggleUI(isExtensionEnabled);
+
       updateUI();
     } catch (err) {
       console.error('Error al cargar datos:', err);
     }
+  }
+
+  function updateToggleUI(isEnabled) {
+    if (!toggleStatusLabel) return;
+    toggleStatusLabel.textContent = isEnabled ? 'ON' : 'OFF';
+    if (isEnabled) {
+      toggleStatusLabel.classList.add('active');
+    } else {
+      toggleStatusLabel.classList.remove('active');
+    }
+  }
+
+  if (extensionToggle) {
+    extensionToggle.addEventListener('change', async () => {
+      const isEnabled = extensionToggle.checked;
+      updateToggleUI(isEnabled);
+      await chrome.storage.local.set({ isExtensionEnabled: isEnabled });
+      chrome.runtime.sendMessage({ action: 'setExtensionEnabled', isEnabled }).catch(() => {});
+    });
   }
 
   // Update UI components

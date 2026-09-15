@@ -13,6 +13,26 @@
   let currentContextSentence = '';
   const clientCache = new Map();
   let cachedVoices = [];
+  let isExtensionEnabled = true;
+
+  // Initialize and listen for extension enabled/disabled state
+  try {
+    chrome.storage.local.get('isExtensionEnabled').then((res) => {
+      if (res && res.isExtensionEnabled !== undefined) {
+        isExtensionEnabled = !!res.isExtensionEnabled;
+      }
+    }).catch(() => {});
+
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName === 'local' && changes.isExtensionEnabled !== undefined) {
+        isExtensionEnabled = !!changes.isExtensionEnabled.newValue;
+        if (!isExtensionEnabled) {
+          removePopup();
+          currentSelectionText = '';
+        }
+      }
+    });
+  } catch (e) {}
 
   // Load and cache strictly English voices
   function initVoices() {
@@ -92,6 +112,7 @@
       pointer-events: auto;
       position: absolute;
       width: 250px;
+      max-width: min(320px, calc(100vw - 20px));
       background: #ffffff;
       border-radius: 18px;
       box-shadow: 0 12px 28px -5px rgba(0, 0, 0, 0.22), 0 8px 10px -6px rgba(0, 0, 0, 0.15);
@@ -109,7 +130,7 @@
       pointer-events: auto;
       position: absolute;
       width: 330px;
-      max-width: 92vw;
+      max-width: min(360px, calc(100vw - 20px));
       background: #ffffff;
       border-radius: 16px;
       box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.15);
@@ -201,15 +222,20 @@
 
     .rl-close-btn {
       position: absolute;
-      top: 8px;
-      right: 10px;
+      top: 6px;
+      right: 8px;
       background: none;
       border: none;
       color: #94a3b8;
       cursor: pointer;
       font-size: 16px;
       line-height: 1;
-      padding: 4px;
+      padding: 6px;
+      min-width: 32px;
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border-radius: 50%;
       transition: color 0.15s, background 0.15s;
     }
@@ -231,12 +257,14 @@
       background: none;
       border: none;
       cursor: pointer;
-      padding: 3px;
+      padding: 4px;
+      min-width: 36px;
+      min-height: 36px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       color: #475569;
-      border-radius: 6px;
+      border-radius: 8px;
       transition: transform 0.15s, color 0.15s;
     }
     .rl-speaker-btn:hover {
@@ -311,7 +339,8 @@
 
     .rl-btn-save {
       width: 100%;
-      height: 38px;
+      min-height: 42px;
+      padding: 8px 12px;
       border: none;
       border-radius: 10px;
       background: #10b981;
@@ -605,9 +634,11 @@
       const card = shadowRoot?.getElementById('rl-card');
       if (card) {
         const rect = card.getBoundingClientRect();
-        if (rect.right > window.innerWidth - 10) {
-          const diff = rect.right - (window.innerWidth - 10);
-          card.style.left = `${Math.max(10, coords.left - diff)}px`;
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+        if (rect.right > viewportWidth - 10) {
+          const diff = rect.right - (viewportWidth - 10);
+          const currentLeft = parseFloat(card.style.left) || coords.left;
+          card.style.left = `${Math.max(10, currentLeft - diff)}px`;
         }
         if (rect.left < 10) {
           card.style.left = '10px';
@@ -635,22 +666,29 @@
 
   // Calculate coords for popup relative to document
   function calculatePopupCoords(selection) {
+    if (!selection || selection.rangeCount === 0) {
+      return { top: 10, left: 10 };
+    }
     const range = selection.getRangeAt(0);
     const rect = range.getBoundingClientRect();
 
     const scrollX = window.scrollX || window.pageXOffset;
     const scrollY = window.scrollY || window.pageYOffset;
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
 
     const popupHeight = 155;
-    let left = rect.left + scrollX + (rect.width / 2) - 130;
-    let top = rect.top + scrollY - popupHeight - 10;
+    let left = rect.left + scrollX + (rect.width / 2) - 125;
+    let top = rect.top + scrollY - popupHeight - 12;
 
     if (rect.top - popupHeight < 20) {
-      top = rect.bottom + scrollY + 10;
+      top = rect.bottom + scrollY + 12;
     }
 
-    if (left < 10) left = 10;
-    return { top: Math.max(10, top), left };
+    const maxLeft = scrollX + viewportWidth - 270;
+    if (left > maxLeft) left = Math.max(10, maxLeft);
+    if (left < scrollX + 10) left = scrollX + 10;
+
+    return { top: Math.max(10, top), left: Math.max(10, left) };
   }
 
   function getContextSentence(selection) {
@@ -681,6 +719,10 @@
 
   // Handle selection event (words vs sentences/paragraphs)
   async function handleSelection() {
+    if (!isExtensionEnabled) {
+      return;
+    }
+
     const selection = window.getSelection();
     const text = selection ? selection.toString().trim() : '';
 
@@ -808,7 +850,28 @@
     }, 60);
   });
 
-  // Close popup on Escape key or outside click
+  // Mobile touch selection support (Firefox for Android, Mobile Chrome)
+  document.addEventListener('touchend', (e) => {
+    if (hostElement && e.composedPath().includes(hostElement)) {
+      return;
+    }
+    if (!isExtensionEnabled) return;
+
+    clearTimeout(selectionTimeout);
+    selectionTimeout = setTimeout(() => {
+      const selection = window.getSelection();
+      const text = selection ? selection.toString().trim() : '';
+
+      if (text) {
+        handleSelection();
+      } else {
+        removePopup();
+        currentSelectionText = '';
+      }
+    }, 280);
+  }, { passive: true });
+
+  // Close popup on Escape key or outside click/touch
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       removePopup();
@@ -822,4 +885,11 @@
       currentSelectionText = '';
     }
   });
+
+  document.addEventListener('touchstart', (e) => {
+    if (hostElement && !e.composedPath().includes(hostElement)) {
+      removePopup();
+      currentSelectionText = '';
+    }
+  }, { passive: true });
 })();
